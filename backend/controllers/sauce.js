@@ -26,7 +26,7 @@ exports.findOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(function(sauce) {
             console.log(sauce);
-            res.status(200).json({ sauce })
+            res.status(200).json(sauce)
         })
         .catch(error => res.status(400).json(error));
 }
@@ -34,18 +34,18 @@ exports.findOneSauce = (req, res, next) => {
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ? {
         ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : {...req.body };
 
-    delete sauceObject.userId;
+    delete sauceObject._userId;
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
             if (sauce.userId != req.auth.userId) {
-                res.status(401).json({ message: 'Non-autorisé' })
+                res.status(401).json({ message: 'Non-autorisé' });
             } else {
                 Sauce.updateOne({ _id: req.params.id }, {...sauceObject, _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Objet modifé' }))
-                    .catch(error => res.status(401).json({ error }))
+                    .then(() => res.status(200).json({ message: 'Objet modifié' }))
+                    .catch(error => res.status(401).json({ error }));
             }
         })
         .catch((error) => {
