@@ -2,7 +2,6 @@ const Sauce = require('../models/sauce');
 
 exports.createSauce = (req, res, next) => {
     const sauces = JSON.parse(req.body.sauce);
-    delete sauces._id;
     const newSauce = new Sauce({
         ...sauces,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
@@ -11,6 +10,7 @@ exports.createSauce = (req, res, next) => {
         usersLiked: [],
         usersDisliked: []
     })
+    console.log(req.body);
     newSauce.save()
         .then(() => res.status(201).json({ message: 'Objet enregistré !' }))
         .catch((error) => res.status(400).json({ error }))
@@ -18,8 +18,14 @@ exports.createSauce = (req, res, next) => {
 
 exports.findSauces = (req, res, next) => {
     Sauce.find()
-        .then(sauces => res.status(200).json(sauces))
-        .catch(error => res.status(400).json({ error }))
+        .then(function(sauces) {
+            console.log(sauces);
+            res.status(200).json(sauces)
+        })
+        .catch(function(error) {
+            console.log(error);
+            res.status(400).json({ error })
+        })
 }
 
 exports.findOneSauce = (req, res, next) => {
@@ -37,10 +43,11 @@ exports.modifySauce = (req, res, next) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : {...req.body };
 
-    delete sauceObject._userId;
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
-            if (sauce.userId != req.auth.userId) {
+            console.log(sauce);
+            console.log(sauceObject.userId);
+            if (sauce.userId._id.toString() !== sauceObject.userId) {
                 res.status(401).json({ message: 'Non-autorisé' });
             } else {
                 Sauce.updateOne({ _id: req.params.id }, {...sauceObject, _id: req.params.id })
