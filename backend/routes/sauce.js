@@ -11,6 +11,7 @@ router.put('/:id', auth, multer, sauceController.modifySauce);
 router.delete('/:id', auth, sauceController.deleteSauce);
 router.post('/:id/like', auth, sauceController.like);
 ///créer 4 routes : 1.toutes les sauces, 2.une sauce en prenant comme para l'id, 3.modifier une sauce, 4.supprimer une sauce
+//multer => gérer les images
 
 
 module.exports = router;
